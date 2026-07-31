@@ -33,5 +33,12 @@
         "title": "Health Dashboard Redirection Loop Resolved",
         "message": "Resolved a routing issue that caused a temporary redirection loop (ERR_TOO_MANY_REDIRECTS) when accessing the health dashboard at /health. Clean URL routing rules have been updated and normal accessibility is restored.",
         "date": "2026-07-31"
+    },
+    {
+        "id": 6,
+        "type": "resolved",
+        "title": "Cloud Firewall Security Hardening & Protocol Rules Updated",
+        "message": "Completed a comprehensive security audit and rule update on cloud firewall policies. Restricted remote administration access exclusively to authorized origin management IP pools, added standard HTTP port 80 routing rules for automated certificate validation and transport redirects, and verified HTTPS/TLS port 443 inbound rules for secure API and WebSocket communications.",
+        "date": "2026-07-31"
     }
 ]
