@@ -26,5 +26,12 @@
         "title": "Root Domain Routing & 404 Behavior Updated",
         "message": "Resolved an issue where root domain routing served status dashboard content on the root path. Root domain routing has been updated to enforce standard 404 behavior, isolating health status monitoring exclusively to /health.",
         "date": "2026-07-31"
+    },
+    {
+        "id": 5,
+        "type": "resolved",
+        "title": "Health Dashboard Redirection Loop Resolved",
+        "message": "Resolved a routing issue that caused a temporary redirection loop (ERR_TOO_MANY_REDIRECTS) when accessing the health dashboard at /health. Clean URL routing rules have been updated and normal accessibility is restored.",
+        "date": "2026-07-31"
     }
 ]
