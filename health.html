@@ -351,6 +351,7 @@
     <div class="tabs-bar">
         <button class="tab-btn active" data-tab="status">Current status</button>
         <button class="tab-btn" data-tab="messages">Open and recent issues (<span id="msg-count">0</span>)</button>
+        <button class="tab-btn" data-tab="changelog">Frontend Changelog</button>
     </div>
 
     <div class="content">
@@ -392,6 +393,13 @@
         <div id="tab-messages" class="tab-panel">
             <div id="messages-list">
                 <div class="no-incidents">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Changelog Tab -->
+        <div id="tab-changelog" class="tab-panel">
+            <div id="changelog-list">
+                <div class="no-incidents">Loading changelog...</div>
             </div>
         </div>
     </div>
@@ -503,6 +511,41 @@
             }
         }
 
+        async function loadChangelog() {
+            const container = document.getElementById('changelog-list');
+            try {
+                const res = await fetch('changelog.json?' + Date.now());
+                const entries = await res.json();
+
+                if (!entries.length) {
+                    container.innerHTML = '<div class="no-incidents">No changelog entries available.</div>';
+                    return;
+                }
+
+                container.innerHTML = entries.map(item => `
+                    <div class="incident-card expanded" style="margin-bottom: 16px;">
+                        <div class="incident-header" style="cursor: default;">
+                            <div class="incident-meta">
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                                    <span style="background: #e6f2f8; color: #0073bb; font-weight: 700; font-size: 12px; padding: 2px 8px; border-radius: 4px;">${esc(item.version)}</span>
+                                    <span class="incident-title" style="margin-bottom: 0;">${esc(item.title)}</span>
+                                </div>
+                                <div class="incident-date">${item.date}</div>
+                            </div>
+                        </div>
+                        <div class="incident-body" style="display: block; padding-left: 16px;">
+                            <p style="margin-bottom: 8px; font-weight: 500; color: #16191f;">${esc(item.summary)}</p>
+                            <ul style="padding-left: 20px; margin: 0;">
+                                ${item.changes.map(c => `<li style="margin-bottom: 4px;">${esc(c)}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                container.innerHTML = '<div class="no-incidents">Unable to load changelog.</div>';
+            }
+        }
+
         function esc(s) {
             const d = document.createElement('div');
             d.textContent = s;
@@ -511,6 +554,7 @@
 
         checkHealth();
         loadMessages();
+        loadChangelog();
         setInterval(checkHealth, 30000);
         setInterval(loadMessages, 60000);
     </script>

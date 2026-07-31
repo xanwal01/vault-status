@@ -1,0 +1,35 @@
+[
+    {
+        "version": "v1.2.0",
+        "date": "2026-07-31",
+        "title": "Dynamic Component Rendering & Privacy Enhancement",
+        "summary": "Improved application performance through external HTML fragment loading and updated session security model.",
+        "changes": [
+            "Refactored modal dialog system to dynamically load HTML fragment templates on demand.",
+            "Upgraded session authorization and logging identifiers to use cryptographic discriminators.",
+            "Integrated real-time service health dashboard and status monitoring."
+        ]
+    },
+    {
+        "version": "v1.1.0",
+        "date": "2026-07-30",
+        "title": "Encrypted Sync & Compressed Backups",
+        "summary": "Added support for real-time peer-to-peer data sync and compressed vault storage.",
+        "changes": [
+            "Implemented 4-digit PIN numeric handshake for secure device pairing.",
+            "Added support for compressed SQLite vault payload export and import.",
+            "Added client-side security event logging and audit history."
+        ]
+    },
+    {
+        "version": "v1.0.0",
+        "date": "2026-07-28",
+        "title": "Initial Vault Authenticator Release",
+        "summary": "Core launch of the Vault Authenticator progressive web app.",
+        "changes": [
+            "TOTP and HOTP two-factor authentication code generation with visual timer countdowns.",
+            "Offline-first PWA architecture with local AES-GCM encrypted persistence.",
+            "Integrated camera QR code scanning and manual secret key registration."
+        ]
+    }
+]
