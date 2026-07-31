@@ -3,422 +3,512 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vault Status — vault.observer</title>
-    <meta name="description" content="Real-time status page for Vault Authenticator services.">
+    <title>Service Health — Vault Observer</title>
+    <meta name="description" content="View the current and historical status of Vault services.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-primary: #0a0a0f;
-            --bg-card: #12121a;
-            --bg-card-hover: #1a1a26;
-            --border: #1e1e2e;
-            --accent: #6c63ff;
-            --accent-glow: rgba(108, 99, 255, 0.15);
-            --green: #22c55e;
-            --green-glow: rgba(34, 197, 94, 0.15);
-            --red: #ef4444;
-            --red-glow: rgba(239, 68, 68, 0.15);
-            --yellow: #f59e0b;
-            --yellow-glow: rgba(245, 158, 11, 0.15);
-            --text-main: #e4e4ef;
-            --text-muted: #8888a0;
-            --text-dim: #555566;
-            --radius: 12px;
-        }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f2f3f3;
+            color: #16191f;
             min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        .page-bg {
-            position: fixed; inset: 0; z-index: -1;
-            background:
-                radial-gradient(ellipse 60% 40% at 50% 0%, rgba(108, 99, 255, 0.06) 0%, transparent 70%),
-                radial-gradient(ellipse 40% 30% at 80% 20%, rgba(34, 197, 94, 0.04) 0%, transparent 60%);
-        }
-
-        .container {
-            max-width: 720px;
-            margin: 0 auto;
-            padding: 60px 20px 80px;
-        }
-
-        /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 48px;
-        }
-
-        .header-logo {
-            font-size: 0.85rem;
-            font-weight: 700;
-            letter-spacing: 0.25em;
-            text-transform: uppercase;
-            color: var(--accent);
-            margin-bottom: 8px;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 6px;
-            background: linear-gradient(135deg, var(--text-main) 0%, var(--text-muted) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .header p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* Status Hero */
-        .status-hero {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            padding: 28px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            margin-bottom: 32px;
-            transition: all 0.4s ease;
-        }
-
-        .status-hero.online {
-            border-color: rgba(34, 197, 94, 0.3);
-            box-shadow: 0 0 30px var(--green-glow);
-        }
-
-        .status-hero.offline {
-            border-color: rgba(239, 68, 68, 0.3);
-            box-shadow: 0 0 30px var(--red-glow);
-        }
-
-        .status-hero.checking {
-            border-color: rgba(245, 158, 11, 0.3);
-            box-shadow: 0 0 30px var(--yellow-glow);
-        }
-
-        .status-dot {
-            width: 14px; height: 14px;
-            border-radius: 50%;
-            background: var(--yellow);
-            animation: pulse 1.5s ease-in-out infinite;
-            flex-shrink: 0;
-        }
-
-        .status-hero.online .status-dot { background: var(--green); }
-        .status-hero.offline .status-dot { background: var(--red); }
-        .status-hero.checking .status-dot { background: var(--yellow); }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.85); }
-        }
-
-        .status-text {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .status-hero.online .status-text { color: var(--green); }
-        .status-hero.offline .status-text { color: var(--red); }
-        .status-hero.checking .status-text { color: var(--yellow); }
-
-        .status-meta {
-            font-size: 0.78rem;
-            color: var(--text-dim);
-            text-align: center;
-            margin-top: -20px;
-            margin-bottom: 32px;
-        }
-
-        /* Services Grid */
-        .section-title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            margin-bottom: 14px;
-        }
-
-        .services {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 40px;
-        }
-
-        .service-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            transition: background 0.2s;
-        }
-
-        .service-row:hover { background: var(--bg-card-hover); }
-
-        .service-name {
-            font-weight: 500;
-            font-size: 0.92rem;
-        }
-
-        .service-badge {
-            font-size: 0.72rem;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .badge-ok { background: var(--green-glow); color: var(--green); }
-        .badge-down { background: var(--red-glow); color: var(--red); }
-        .badge-checking { background: var(--yellow-glow); color: var(--yellow); }
-
-        /* Response time */
-        .response-time {
-            font-size: 0.78rem;
-            color: var(--text-dim);
-            margin-left: auto;
-            margin-right: 12px;
-        }
-
-        /* Messages / Issues */
-        .messages {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 40px;
-        }
-
-        .message-card {
-            padding: 18px 20px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            border-left: 3px solid var(--text-dim);
-        }
-
-        .message-card.issue { border-left-color: var(--red); }
-        .message-card.warning { border-left-color: var(--yellow); }
-        .message-card.resolved { border-left-color: var(--green); }
-        .message-card.info { border-left-color: var(--accent); }
-
-        .message-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 6px;
-        }
-
-        .message-type {
-            font-size: 0.68rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-
-        .message-card.issue .message-type { background: var(--red-glow); color: var(--red); }
-        .message-card.warning .message-type { background: var(--yellow-glow); color: var(--yellow); }
-        .message-card.resolved .message-type { background: var(--green-glow); color: var(--green); }
-        .message-card.info .message-type { background: var(--accent-glow); color: var(--accent); }
-
-        .message-date {
-            font-size: 0.72rem;
-            color: var(--text-dim);
-        }
-
-        .message-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 4px;
-        }
-
-        .message-body {
-            font-size: 0.85rem;
-            color: var(--text-muted);
+            font-size: 14px;
             line-height: 1.5;
         }
 
-        .no-messages {
+        /* Top bar */
+        .topbar {
+            background: #232f3e;
+            color: #fff;
+            padding: 0 24px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .topbar-brand {
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.01em;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: #aab7b8;
+            font-size: 12px;
+        }
+
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .auto-refresh-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #1b9e3e;
+        }
+
+        /* Header section */
+        .page-header {
+            background: #232f3e;
+            padding: 20px 40px 28px;
+            color: #fff;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .page-header p {
+            color: #aab7b8;
+            font-size: 14px;
+        }
+
+        /* Tabs */
+        .tabs-bar {
+            background: #fff;
+            border-bottom: 1px solid #d5dbdb;
+            padding: 0 40px;
+            display: flex;
+            gap: 0;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #16191f;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            transition: border-color 0.15s;
+        }
+
+        .tab-btn:hover { color: #0073bb; }
+        .tab-btn.active {
+            border-bottom-color: #0073bb;
+            color: #0073bb;
+        }
+
+        /* Main content */
+        .content {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px 40px;
+        }
+
+        /* Status banner */
+        .status-banner {
+            background: #fff;
+            border: 1px solid #d5dbdb;
+            border-radius: 4px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .status-icon.ok { color: #1b9e3e; }
+        .status-icon.down { color: #d13212; }
+
+        .status-banner-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-banner.ok { border-left: 4px solid #1b9e3e; }
+        .status-banner.down { border-left: 4px solid #d13212; }
+
+        /* Service table */
+        .section-label {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #16191f;
+        }
+
+        .service-table {
+            width: 100%;
+            background: #fff;
+            border: 1px solid #d5dbdb;
+            border-radius: 4px;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 28px;
+        }
+
+        .service-table th {
+            text-align: left;
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #545b64;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            background: #fafafa;
+            border-bottom: 1px solid #d5dbdb;
+        }
+
+        .service-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eaeded;
+            font-size: 14px;
+        }
+
+        .service-table tr:last-child td { border-bottom: none; }
+
+        .service-table .svc-name {
+            font-weight: 500;
+        }
+
+        .service-table .svc-desc {
+            color: #545b64;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+
+        .badge-operational { background: #f2f8f0; color: #1b9e3e; }
+        .badge-disrupted { background: #fdf3f0; color: #d13212; }
+        .badge-checking { background: #fef8ec; color: #b07d2b; }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .badge-operational .badge-dot { background: #1b9e3e; }
+        .badge-disrupted .badge-dot { background: #d13212; }
+        .badge-checking .badge-dot { background: #b07d2b; }
+
+        .latency {
+            color: #545b64;
+            font-size: 12px;
+        }
+
+        /* Messages / Incidents */
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .incident-card {
+            background: #fff;
+            border: 1px solid #d5dbdb;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .incident-header {
+            padding: 12px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .incident-header:hover { background: #fafafa; }
+
+        .incident-chevron {
+            color: #545b64;
+            font-size: 11px;
+            margin-top: 3px;
+            flex-shrink: 0;
+            transition: transform 0.15s;
+        }
+
+        .incident-card.expanded .incident-chevron {
+            transform: rotate(90deg);
+        }
+
+        .incident-meta {
+            flex: 1;
+        }
+
+        .incident-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .incident-badges {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .incident-type-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 3px;
+        }
+
+        .type-issue { background: #fdf3f0; color: #d13212; }
+        .type-warning { background: #fef8ec; color: #b07d2b; }
+        .type-resolved { background: #f2f8f0; color: #1b9e3e; }
+        .type-info { background: #f1f3ff; color: #0073bb; }
+
+        .incident-date {
+            font-size: 12px;
+            color: #545b64;
+        }
+
+        .incident-body {
+            display: none;
+            padding: 0 16px 14px 36px;
+            font-size: 13px;
+            color: #545b64;
+            line-height: 1.6;
+            border-top: 1px solid #eaeded;
+            padding-top: 12px;
+            margin-left: 10px;
+        }
+
+        .incident-card.expanded .incident-body { display: block; }
+
+        .no-incidents {
+            background: #fff;
+            border: 1px solid #d5dbdb;
+            border-radius: 4px;
+            padding: 32px;
             text-align: center;
-            padding: 24px;
-            color: var(--text-dim);
-            font-size: 0.85rem;
+            color: #545b64;
+            font-size: 14px;
+        }
+
+        .no-incidents svg {
+            display: block;
+            margin: 0 auto 8px;
         }
 
         /* Footer */
         .footer {
             text-align: center;
-            padding-top: 32px;
-            border-top: 1px solid var(--border);
-            color: var(--text-dim);
-            font-size: 0.78rem;
+            padding: 20px;
+            color: #545b64;
+            font-size: 12px;
+            border-top: 1px solid #d5dbdb;
+            margin-top: 32px;
         }
 
-        .footer a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-
-        @media (max-width: 500px) {
-            .container { padding: 40px 16px 60px; }
-            .header h1 { font-size: 1.5rem; }
+        @media (max-width: 640px) {
+            .page-header { padding: 16px 20px 20px; }
+            .tabs-bar { padding: 0 20px; }
+            .content { padding: 16px 20px; }
+            .topbar { padding: 0 16px; }
+            .service-table .svc-desc { display: none; }
         }
     </style>
 </head>
 <body>
-    <div class="page-bg"></div>
-    <div class="container">
-        <div class="header">
-            <div class="header-logo">Vault Observer</div>
-            <h1>System Status</h1>
-            <p>Real-time health monitoring for Vault services</p>
-        </div>
-
-        <div id="status-hero" class="status-hero checking">
-            <div class="status-dot"></div>
-            <span class="status-text">Checking status...</span>
-        </div>
-        <div id="status-meta" class="status-meta"></div>
-
-        <div class="section-title">Services</div>
-        <div id="services" class="services">
-            <div class="service-row">
-                <span class="service-name">API Server</span>
-                <span id="api-response-time" class="response-time"></span>
-                <span id="api-badge" class="service-badge badge-checking">Checking</span>
+    <div class="topbar">
+        <span class="topbar-brand">Vault Observer</span>
+        <div class="topbar-right">
+            <div class="auto-refresh">
+                <span class="auto-refresh-dot"></span>
+                <span id="refresh-label">Auto-refresh</span>
             </div>
-            <div class="service-row">
-                <span class="service-name">WebSocket Endpoint</span>
-                <span id="ws-response-time" class="response-time"></span>
-                <span id="ws-badge" class="service-badge badge-checking">Checking</span>
-            </div>
-        </div>
-
-        <div class="section-title">Messages</div>
-        <div id="messages" class="messages">
-            <div class="no-messages">Loading messages...</div>
-        </div>
-
-        <div class="footer">
-            <p>vault.observer &mdash; Checked every 30 seconds while this page is open</p>
+            <span id="last-checked"></span>
         </div>
     </div>
+
+    <div class="page-header">
+        <h1>Service health</h1>
+        <p>View the current and historical status of Vault services.</p>
+    </div>
+
+    <div class="tabs-bar">
+        <button class="tab-btn active" data-tab="status">Current status</button>
+        <button class="tab-btn" data-tab="messages">Open and recent issues (<span id="msg-count">0</span>)</button>
+    </div>
+
+    <div class="content">
+        <!-- Current Status Tab -->
+        <div id="tab-status" class="tab-panel active">
+            <div id="status-banner" class="status-banner ok">
+                <svg class="status-icon ok" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                <span class="status-banner-text" id="banner-text">Checking services...</span>
+            </div>
+
+            <div class="section-label">Services</div>
+            <table class="service-table">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Description</th>
+                        <th>Latency</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="svc-name">API Server</td>
+                        <td class="svc-desc">HTTPS health endpoint</td>
+                        <td class="latency" id="api-latency">—</td>
+                        <td id="api-status"><span class="badge badge-checking"><span class="badge-dot"></span> Checking</span></td>
+                    </tr>
+                    <tr>
+                        <td class="svc-name">WebSocket</td>
+                        <td class="svc-desc">Real-time sync endpoint</td>
+                        <td class="latency" id="ws-latency">—</td>
+                        <td id="ws-status"><span class="badge badge-checking"><span class="badge-dot"></span> Checking</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Messages Tab -->
+        <div id="tab-messages" class="tab-panel">
+            <div id="messages-list">
+                <div class="no-incidents">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">vault.observer — Checked every 30 seconds while this page is open</div>
 
     <script>
         const API_URL = 'https://api.vault.observer';
 
-        // Health check
-        async function checkHealth() {
-            const hero = document.getElementById('status-hero');
-            const meta = document.getElementById('status-meta');
-            const apiBadge = document.getElementById('api-badge');
-            const apiTime = document.getElementById('api-response-time');
-            const wsBadge = document.getElementById('ws-badge');
-            const wsTime = document.getElementById('ws-response-time');
+        // Tabs
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+            });
+        });
 
-            let apiOk = false;
-            let wsOk = false;
-            let latencyMs = 0;
-
-            // Test API /health
-            try {
-                const start = performance.now();
-                const res = await fetch(`${API_URL}/health`, { signal: AbortSignal.timeout(8000) });
-                latencyMs = Math.round(performance.now() - start);
-                if (res.ok) {
-                    const data = await res.json();
-                    apiOk = data.status === 'ok';
-                }
-            } catch (e) { apiOk = false; }
-
-            apiBadge.textContent = apiOk ? 'Operational' : 'Down';
-            apiBadge.className = `service-badge ${apiOk ? 'badge-ok' : 'badge-down'}`;
-            apiTime.textContent = apiOk ? `${latencyMs}ms` : '';
-
-            // Test WebSocket
-            try {
-                wsOk = await new Promise((resolve) => {
-                    const wsStart = performance.now();
-                    const ws = new WebSocket(`${API_URL.replace('https', 'wss')}/ws`);
-                    const timeout = setTimeout(() => { ws.close(); resolve(false); }, 8000);
-                    ws.onopen = () => {
-                        const wsLatency = Math.round(performance.now() - wsStart);
-                        wsTime.textContent = `${wsLatency}ms`;
-                        clearTimeout(timeout);
-                        ws.close();
-                        resolve(true);
-                    };
-                    ws.onerror = () => { clearTimeout(timeout); resolve(false); };
-                });
-            } catch (e) { wsOk = false; }
-
-            wsBadge.textContent = wsOk ? 'Operational' : 'Down';
-            wsBadge.className = `service-badge ${wsOk ? 'badge-ok' : 'badge-down'}`;
-
-            const allOk = apiOk && wsOk;
-            hero.className = `status-hero ${allOk ? 'online' : 'offline'}`;
-            hero.querySelector('.status-text').textContent = allOk ? 'All Systems Operational' : 'Service Disruption Detected';
-
-            const now = new Date();
-            meta.textContent = `Last checked: ${now.toLocaleTimeString()} — ${apiOk ? `API responded in ${latencyMs}ms` : 'API unreachable'}`;
+        function makeBadge(ok) {
+            if (ok) return '<span class="badge badge-operational"><span class="badge-dot"></span> Operational</span>';
+            return '<span class="badge badge-disrupted"><span class="badge-dot"></span> Disrupted</span>';
         }
 
-        // Load status messages
+        async function checkHealth() {
+            let apiOk = false, wsOk = false, apiMs = 0, wsMs = 0;
+
+            try {
+                const t0 = performance.now();
+                const res = await fetch(API_URL + '/health', { signal: AbortSignal.timeout(8000) });
+                apiMs = Math.round(performance.now() - t0);
+                if (res.ok) {
+                    const d = await res.json();
+                    apiOk = d.status === 'ok';
+                }
+            } catch (e) {}
+
+            document.getElementById('api-status').innerHTML = makeBadge(apiOk);
+            document.getElementById('api-latency').textContent = apiOk ? apiMs + 'ms' : '—';
+
+            try {
+                wsOk = await new Promise(resolve => {
+                    const t0 = performance.now();
+                    const ws = new WebSocket(API_URL.replace('https', 'wss') + '/ws');
+                    const to = setTimeout(() => { ws.close(); resolve(false); }, 8000);
+                    ws.onopen = () => {
+                        wsMs = Math.round(performance.now() - t0);
+                        clearTimeout(to); ws.close(); resolve(true);
+                    };
+                    ws.onerror = () => { clearTimeout(to); resolve(false); };
+                });
+            } catch (e) {}
+
+            document.getElementById('ws-status').innerHTML = makeBadge(wsOk);
+            document.getElementById('ws-latency').textContent = wsOk ? wsMs + 'ms' : '—';
+
+            const allOk = apiOk && wsOk;
+            const banner = document.getElementById('status-banner');
+            const icon = banner.querySelector('.status-icon');
+            banner.className = 'status-banner ' + (allOk ? 'ok' : 'down');
+            icon.className = 'status-icon ' + (allOk ? 'ok' : 'down');
+
+            if (allOk) {
+                icon.innerHTML = '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>';
+            } else {
+                icon.innerHTML = '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>';
+            }
+
+            document.getElementById('banner-text').textContent = allOk
+                ? 'All services are operating normally.'
+                : 'Service disruption detected — one or more services are unreachable.';
+
+            const now = new Date();
+            document.getElementById('last-checked').textContent =
+                'Updated ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
         async function loadMessages() {
-            const container = document.getElementById('messages');
+            const container = document.getElementById('messages-list');
             try {
                 const res = await fetch('status.json?' + Date.now());
                 const messages = await res.json();
+                document.getElementById('msg-count').textContent = messages.length;
 
                 if (!messages.length) {
-                    container.innerHTML = '<div class="no-messages">No current issues — all clear! ✨</div>';
+                    container.innerHTML = '<div class="no-incidents"><svg width="24" height="24" viewBox="0 0 20 20" fill="#1b9e3e"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>No open or recent issues.</div>';
                     return;
                 }
 
-                // Sort newest first
                 messages.sort((a, b) => new Date(b.date) - new Date(a.date));
 
                 container.innerHTML = messages.map(msg => `
-                    <div class="message-card ${msg.type}">
-                        <div class="message-header">
-                            <span class="message-type">${msg.type}</span>
-                            <span class="message-date">${msg.date}</span>
+                    <div class="incident-card" onclick="this.classList.toggle('expanded')">
+                        <div class="incident-header">
+                            <span class="incident-chevron">▶</span>
+                            <div class="incident-meta">
+                                <div class="incident-title">${esc(msg.title)}</div>
+                                <div class="incident-badges">
+                                    <span class="incident-type-badge type-${msg.type}">${msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}</span>
+                                    <span class="incident-date">${msg.date}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="message-title">${escapeHtml(msg.title)}</div>
-                        <div class="message-body">${escapeHtml(msg.message)}</div>
+                        <div class="incident-body">${esc(msg.message)}</div>
                     </div>
                 `).join('');
             } catch (e) {
-                container.innerHTML = '<div class="no-messages">Unable to load messages</div>';
+                container.innerHTML = '<div class="no-incidents">Unable to load messages.</div>';
             }
         }
 
-        function escapeHtml(str) {
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
+        function esc(s) {
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
         }
 
-        // Initial check + interval
         checkHealth();
         loadMessages();
         setInterval(checkHealth, 30000);
