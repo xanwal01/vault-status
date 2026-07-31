@@ -1,3 +1,0 @@
-# Route root to 404
-/ /404.html 404
-/health /health.html 200
