@@ -19,7 +19,6 @@
             line-height: 1.5;
         }
 
-        /* Top bar */
         .topbar {
             background: #232f3e;
             color: #fff;
@@ -58,7 +57,6 @@
             background: #1b9e3e;
         }
 
-        /* Header section */
         .page-header {
             background: #232f3e;
             padding: 20px 40px 28px;
@@ -76,7 +74,6 @@
             font-size: 14px;
         }
 
-        /* Tabs */
         .tabs-bar {
             background: #fff;
             border-bottom: 1px solid #d5dbdb;
@@ -104,14 +101,12 @@
             color: #0073bb;
         }
 
-        /* Main content */
         .content {
             max-width: 960px;
             margin: 0 auto;
             padding: 24px 40px;
         }
 
-        /* Status banner */
         .status-banner {
             background: #fff;
             border: 1px solid #d5dbdb;
@@ -140,7 +135,6 @@
         .status-banner.ok { border-left: 4px solid #1b9e3e; }
         .status-banner.down { border-left: 4px solid #d13212; }
 
-        /* Service table */
         .section-label {
             font-size: 16px;
             font-weight: 700;
@@ -216,7 +210,6 @@
             font-size: 12px;
         }
 
-        /* Messages / Incidents */
         .tab-panel { display: none; }
         .tab-panel.active { display: block; }
 
@@ -312,7 +305,6 @@
             margin: 0 auto 8px;
         }
 
-        /* Footer */
         .footer {
             text-align: center;
             padding: 20px;
@@ -355,7 +347,6 @@
     </div>
 
     <div class="content">
-        <!-- Current Status Tab -->
         <div id="tab-status" class="tab-panel active">
             <div id="status-banner" class="status-banner ok">
                 <svg class="status-icon ok" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
@@ -389,14 +380,12 @@
             </table>
         </div>
 
-        <!-- Messages Tab -->
         <div id="tab-messages" class="tab-panel">
             <div id="messages-list">
                 <div class="no-incidents">Loading...</div>
             </div>
         </div>
 
-        <!-- Changelog Tab -->
         <div id="tab-changelog" class="tab-panel">
             <div id="changelog-list">
                 <div class="no-incidents">Loading changelog...</div>
@@ -409,7 +398,6 @@
     <script>
         const API_URL = 'https://api.vault.observer';
 
-        // Tabs
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
