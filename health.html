@@ -305,6 +305,44 @@
             margin: 0 auto 8px;
         }
 
+        .filter-bar {
+            background: #fff;
+            border: 1px solid #d5dbdb;
+            border-radius: 4px;
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #545b64;
+            font-weight: 500;
+        }
+
+        .filter-select {
+            background: #fff;
+            border: 1px solid #aab7b8;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 13px;
+            color: #16191f;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            border-color: #0073bb;
+            outline: none;
+            box-shadow: 0 0 0 1px #0073bb;
+        }
+
         .footer {
             text-align: center;
             padding: 20px;
@@ -381,6 +419,25 @@
         </div>
 
         <div id="tab-messages" class="tab-panel">
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label for="filter-type">Filter by type:</label>
+                    <select id="filter-type" class="filter-select">
+                        <option value="all">All Statuses</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="issue">Issue / Outage</option>
+                        <option value="warning">Warning</option>
+                        <option value="info">Info</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-sort">Sort order:</label>
+                    <select id="filter-sort" class="filter-select">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                    </select>
+                </div>
+            </div>
             <div id="messages-list">
                 <div class="no-incidents">Loading...</div>
             </div>
@@ -397,6 +454,7 @@
 
     <script>
         const API_URL = 'https://api.vault.observer';
+        let rawMessages = [];
 
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -466,38 +524,61 @@
         }
 
         async function loadMessages() {
-            const container = document.getElementById('messages-list');
             try {
                 const res = await fetch('status.json?' + Date.now());
-                const messages = await res.json();
-                document.getElementById('msg-count').textContent = messages.length;
-
-                if (!messages.length) {
-                    container.innerHTML = '<div class="no-incidents"><svg width="24" height="24" viewBox="0 0 20 20" fill="#1b9e3e"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>No open or recent issues.</div>';
-                    return;
-                }
-
-                messages.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-                container.innerHTML = messages.map(msg => `
-                    <div class="incident-card" onclick="this.classList.toggle('expanded')">
-                        <div class="incident-header">
-                            <span class="incident-chevron">▶</span>
-                            <div class="incident-meta">
-                                <div class="incident-title">${esc(msg.title)}</div>
-                                <div class="incident-badges">
-                                    <span class="incident-type-badge type-${msg.type}">${msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}</span>
-                                    <span class="incident-date">${msg.date}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="incident-body">${esc(msg.message)}</div>
-                    </div>
-                `).join('');
+                rawMessages = await res.json();
+                renderMessages();
             } catch (e) {
-                container.innerHTML = '<div class="no-incidents">Unable to load messages.</div>';
+                document.getElementById('messages-list').innerHTML = '<div class="no-incidents">Unable to load messages.</div>';
             }
         }
+
+        function renderMessages() {
+            const container = document.getElementById('messages-list');
+            const typeFilter = document.getElementById('filter-type')?.value || 'all';
+            const sortOrder = document.getElementById('filter-sort')?.value || 'newest';
+
+            let filtered = rawMessages.slice();
+
+            if (typeFilter !== 'all') {
+                filtered = filtered.filter(m => m.type.toLowerCase() === typeFilter.toLowerCase());
+            }
+
+            filtered.sort((a, b) => {
+                const idA = a.id || 0;
+                const idB = b.id || 0;
+                if (sortOrder === 'oldest') {
+                    return idA - idB || new Date(a.date) - new Date(b.date);
+                }
+                return idB - idA || new Date(b.date) - new Date(a.date);
+            });
+
+            document.getElementById('msg-count').textContent = filtered.length;
+
+            if (!filtered.length) {
+                container.innerHTML = '<div class="no-incidents"><svg width="24" height="24" viewBox="0 0 20 20" fill="#1b9e3e"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>No open or recent issues matching the selected filters.</div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(msg => `
+                <div class="incident-card" onclick="this.classList.toggle('expanded')">
+                    <div class="incident-header">
+                        <span class="incident-chevron">▶</span>
+                        <div class="incident-meta">
+                            <div class="incident-title">${esc(msg.title)}</div>
+                            <div class="incident-badges">
+                                <span class="incident-type-badge type-${msg.type}">${msg.type.charAt(0).toUpperCase() + msg.type.slice(1)}</span>
+                                <span class="incident-date">${msg.date}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="incident-body">${esc(msg.message)}</div>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('filter-type')?.addEventListener('change', renderMessages);
+        document.getElementById('filter-sort')?.addEventListener('change', renderMessages);
 
         async function loadChangelog() {
             const container = document.getElementById('changelog-list');
