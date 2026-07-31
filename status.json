@@ -19,5 +19,12 @@
         "title": "DNS & Domain Routing Configured",
         "message": "Domain routing and DNS configuration have been successfully updated for vault.observer and api.vault.observer.",
         "date": "2026-07-31"
+    },
+    {
+        "id": 4,
+        "type": "resolved",
+        "title": "Root Domain Routing & 404 Behavior Updated",
+        "message": "Resolved an issue where root domain routing served status dashboard content on the root path. Root domain routing has been updated to enforce standard 404 behavior, isolating health status monitoring exclusively to /health.",
+        "date": "2026-07-31"
     }
 ]
