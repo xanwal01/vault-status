@@ -1,5 +1,19 @@
 [
     {
+        "version": "v1.3.0",
+        "date": "2026-07-31",
+        "title": "UI & Aesthetic Overhaul, Settings & Modal Refinement",
+        "summary": "Major frontend redesign featuring a clean developer-focused theme, standardized Settings & Account modals, responsive grid alignment, and topbar icon normalization.",
+        "changes": [
+            "Settings Modal: Standardized toggle switch styling with solid white knobs (#ffffff), drop shadows, and vibrant green active tracks (#2da44e) that persist identically across light and dark modes.",
+            "Account Details Modal: Realigned inline form labels and inputs, zeroed top header padding, and transformed action buttons into right-aligned square SVG icons with subtle hover background tints.",
+            "Account Cards & Grid Layout: Added top grid alignment (align-items: start) to prevent card stretching on expansion, fixed immediate account pin re-rendering, and reorganized card body elements (timer under brand icon, centered OTP code, right-aligned copy button).",
+            "Top Bar & Action Navigation: Replaced text buttons with official Lucide vector SVG icons (Plus, Sync & Refresh, Settings) featuring custom optical scale normalization (1.12x for Plus, 0.95x for Settings) for uniform visual mass.",
+            "Header & Search Bar: Replaced glowing pseudo-elements with an uncolored inline SVG lock logo using dynamic stroke colors, and refined search bar focus states with crisp accent borders.",
+            "Design System & Theme: Replaced neon glows and floating gradients with a clean, developer-focused dark palette (#0d1117 background, #161b22 cards, #30363d borders, #2f81f7 blue accent)."
+        ]
+    },
+    {
         "version": "v1.2.0",
         "date": "2026-07-31",
         "title": "Dynamic Component Rendering & Privacy Enhancement",
