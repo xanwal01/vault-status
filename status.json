@@ -5,5 +5,19 @@
         "title": "Server Deployed",
         "message": "Connected server is live and accepting connections.",
         "date": "2026-07-31"
+    },
+    {
+        "id": 2,
+        "type": "resolved",
+        "title": "API & Cross-Origin Connectivity Restored",
+        "message": "Resolved an issue preventing cross-origin requests from completing successfully on the API health endpoint. Full service connectivity has been restored.",
+        "date": "2026-07-31"
+    },
+    {
+        "id": 3,
+        "type": "resolved",
+        "title": "DNS & Domain Routing Configured",
+        "message": "Domain routing and DNS configuration have been successfully updated for vault.observer and api.vault.observer.",
+        "date": "2026-07-31"
     }
 ]
