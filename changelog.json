@@ -1,5 +1,19 @@
 [
     {
+        "version": "v1.4.0",
+        "date": "2026-08-02",
+        "title": "UI Animation Polish, Manual Import Fixes & Standardized Confirm Modals",
+        "summary": "Extensive frontend polish including interactive SVG tray/arrow directional hover animations, multi-format manual import parser fixes, standardized warning confirmation dialogs, and non-overlapping toast notice positioning.",
+        "changes": [
+            "Sync Mode Grid & Icons: Redesigned the sync modal into a clean 2x2 grid layout featuring square grey action buttons for Send and Receive, and a full-width dashed Import zone with layered folder/document SVG vector icons.",
+            "Interactive Hover Animations: Separated SVG elements into independent tray and arrow components. On hover, Send and Receive arrows smoothly shift in their respective directions and hold position with a 0.15s unhover return delay. The import folder document slides up, tilts 12 degrees, and scales on hover.",
+            "Manual Account Import Fixes: Restored and reconnected manual account import functionality to seamlessly parse plaintext URIs (otpauth://), raw Base32 secret keys, JSON backup arrays, and encrypted vault payloads with secret key deduplication.",
+            "Standardized Warning Confirmation Popout: Replaced native browser confirm() dialogs and emojis with a unified popout modal featuring a Lucide warning triangle SVG icon for confirming unsaved account edits and account deletions.",
+            "Toast Notice Normalization: Fixed toast container to bottom-right viewport positioning with zero drop shadows, compact bounds, and single-listener registration to eliminate duplicate toasts on key copy or session actions.",
+            "Account Card & Form Interactions: Added a dedicated pen edit icon to account card headers, updated card body click targets to toggle code show/hide (reveals code if hidden, hides if already visible), and added inline pen edit buttons to account details fields to unlock inputs on demand."
+        ]
+    },
+    {
         "version": "v1.3.0",
         "date": "2026-07-31",
         "title": "UI & Aesthetic Overhaul, Settings & Modal Refinement",
