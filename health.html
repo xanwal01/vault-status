@@ -474,8 +474,11 @@
             let apiOk = false, wsOk = false, apiMs = 0, wsMs = 0;
 
             try {
+                // Warm-up request for HTTP/TLS keep-alive reuse
+                await fetch(API_URL + '/health', { cache: 'no-store', signal: AbortSignal.timeout(3000) }).catch(() => {});
+                
                 const t0 = performance.now();
-                const res = await fetch(API_URL + '/health', { signal: AbortSignal.timeout(8000) });
+                const res = await fetch(API_URL + '/health', { cache: 'no-store', signal: AbortSignal.timeout(5000) });
                 apiMs = Math.round(performance.now() - t0);
                 if (res.ok) {
                     const d = await res.json();
@@ -488,13 +491,32 @@
 
             try {
                 wsOk = await new Promise(resolve => {
-                    const t0 = performance.now();
                     const ws = new WebSocket(API_URL.replace('https', 'wss') + '/ws');
-                    const to = setTimeout(() => { ws.close(); resolve(false); }, 8000);
+                    const to = setTimeout(() => { try { ws.close(); } catch(e){} resolve(false); }, 6000);
+                    let tPing = 0;
+
                     ws.onopen = () => {
-                        wsMs = Math.round(performance.now() - t0);
-                        clearTimeout(to); ws.close(); resolve(true);
+                        tPing = performance.now();
+                        ws.send(JSON.stringify({ type: 'ping' }));
                     };
+
+                    ws.onmessage = (event) => {
+                        try {
+                            const msg = JSON.parse(event.data);
+                            if (msg.type === 'pong') {
+                                wsMs = Math.round(performance.now() - tPing);
+                                clearTimeout(to);
+                                ws.close();
+                                resolve(true);
+                                return;
+                            }
+                        } catch (e) {}
+                        wsMs = Math.round(performance.now() - tPing);
+                        clearTimeout(to);
+                        ws.close();
+                        resolve(true);
+                    };
+
                     ws.onerror = () => { clearTimeout(to); resolve(false); };
                 });
             } catch (e) {}
