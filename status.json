@@ -12,5 +12,5 @@
         "title": "Service Migration",
         "message": "Server image was transferred from NL Amsterdam to AU Sydney, Firewall was reconfigured, and Cloudflare was upgraded to include Argon. NBN Hybrid infrastructure (copper-fibre hybrids) may experience aggressive rerouting through Singapore and American servers due to Cloudflare proxying.",
         "date": "2026-08-05"
-    },
+    }
 ]
