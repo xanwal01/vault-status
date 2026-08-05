@@ -1,86 +1,16 @@
 [
     {
-        "id": 12,
-        "type": "issue",
-        "title": "Contract Channels Frontend UI State & Interaction Disconnect",
-        "message": "We are tracking an issue regarding how the frontend interface manages active contract channel states. Navigating away from or closing the sync modal can leave active WebSocket contract channels running in the background without updating the UI state or giving the user an intuitive way to reconnect or close the open session.",
-        "date": "2026-08-02"
-    },
-    {
-        "id": 11,
-        "type": "warning",
-        "title": "Potential Security & Memory Leak in Sync Contract Channels",
-        "message": "Investigation has begun into memory consumption and session termination behavior within sync contract channels. We are tracking potential leaks under specific peer disconnect scenarios.\n\nActive investigation points:\n• Channels may not be closing once all users have disconnected.\n• Outdated versions of the app can connect to a sender's channel as a receiver, but their front-end will not display that or let them disconnect, causing the channel to be permanently open.",
-        "date": "2026-08-02"
-    },
-    {
-        "id": 10,
-        "type": "issue",
-        "title": "Security Logs Misrouted to Recipient Device & Dropped by Server",
-        "message": "We noticed an issue with how security audit events are handled when a sync handshake or decryption attempt fails. Security alert payloads are currently being delivered to the vault receiver's device instead of returning to the vault owner.\n\nKey findings under review:\n• The front-end does not yet have a section to scroll through security logs.\n• The server was dropping security logs before saving it to a secure database.\n\nWe are working on re-routing log events directly to vault owners and connecting persistent database writes.",
-        "date": "2026-08-02"
-    },
-    {
-        "id": 9,
-        "type": "issue",
-        "title": "Vault Passwords Always Failing to Decrypt",
-        "message": "We are currently investigating a bug where entering the correct vault master password consistently fails during vault decryption. We suspect a discrepancy in key derivation parameters or salt hashing between client sessions when validating master passwords.",
-        "date": "2026-08-02"
-    },
-    {
-        "id": 8,
-        "type": "resolved",
-        "title": "Sync Channel Event Listener Deduplication & PIN Input Sanitization",
-        "message": "Fixed an issue where initiating multiple sync sessions caused WebSocket event listeners to accumulate on the client, resulting in duplicate payload transmissions and repeated toast notices. Event listeners are now single-fire and PIN entry fields feature automatic digit sanitization and receiver auto-focus.",
-        "date": "2026-08-02"
-    },
-    {
-        "id": 7,
-        "type": "resolved",
-        "title": "WebSocket Sync Binary Payload Relay & Handshake Unwrapping",
-        "message": "Resolved an issue during real-time device sync where the server relayed channel data as raw binary WebSocket frames while recipient clients expected text JSON. Recipient clients now decode binary payload streams, unwrap the encrypted payload, and automatically prompt for vault decryption without getting stuck in a waiting state.",
-        "date": "2026-08-02"
-    },
-    {
-        "id": 6,
-        "type": "resolved",
-        "title": "Cloud Firewall Security Hardening & Protocol Rules Updated",
-        "message": "Completed a comprehensive security audit and rule update on cloud firewall policies. Restricted remote administration access exclusively to authorized origin management IP pools, added standard HTTP port 80 routing rules for automated certificate validation and transport redirects, and verified HTTPS/TLS port 443 inbound rules for secure API and WebSocket communications.",
-        "date": "2026-07-31"
-    },
-    {
-        "id": 5,
-        "type": "resolved",
-        "title": "Health Dashboard Redirection Loop Resolved",
-        "message": "Resolved a routing issue that caused a temporary redirection loop (ERR_TOO_MANY_REDIRECTS) when accessing the health dashboard at /health. Clean URL routing rules have been updated and normal accessibility is restored.",
-        "date": "2026-07-31"
-    },
-    {
-        "id": 4,
-        "type": "resolved",
-        "title": "Root Domain Routing & 404 Behavior Updated",
-        "message": "Resolved an issue where root domain routing served status dashboard content on the root path. Root domain routing has been updated to enforce standard 404 behavior, isolating health status monitoring exclusively to /health.",
-        "date": "2026-07-31"
-    },
-    {
-        "id": 3,
-        "type": "resolved",
-        "title": "DNS & Domain Routing Configured",
-        "message": "Domain routing and DNS configuration have been successfully updated for vault.observer and api.vault.observer.",
-        "date": "2026-07-31"
-    },
-    {
         "id": 2,
-        "type": "resolved",
-        "title": "API & Cross-Origin Connectivity Restored",
-        "message": "Resolved an issue preventing cross-origin requests from completing successfully on the API health endpoint. Full service connectivity has been restored.",
-        "date": "2026-07-31"
+        "type": "warning",
+        "title": "Service Overhaul",
+        "message": The server is receiving a complete overhaul. Expected indefinite downtime as services are rebuilt from the ground up.",
+        "date": "2026-08-05"
     },
     {
         "id": 1,
-        "type": "resolved",
-        "title": "Server Deployed",
-        "message": "Connected server is live and accepting connections.",
-        "date": "2026-07-31"
-    }
+        "type": "info",
+        "title": "Service Migration",
+        "message": Server image was transferred from NL Amsterdam to AU Sydney, Firewall was reconfigured, and Cloudflare was upgraded to include Argon. NBN Hybrid infrastructure (copper-fibre hybrids) may experience aggressive rerouting through Singapore and American servers due to Cloudflare proxying.",
+        "date": "2026-08-05"
+    },
 ]
